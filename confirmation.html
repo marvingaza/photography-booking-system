@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Appointment Confirmed — LUMA Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav container">
+    <a href="index.html" class="brand">LUMA <span>Studio</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="booking.html">Book a Session</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="container confirm-wrap">
+
+    <!-- SUCCESS STATE -->
+    <div class="card confirm-card hidden" id="successState">
+      <svg class="confirm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <circle cx="12" cy="12" r="10"/><path d="M8 12.5l2.5 2.5L16 9.5"/>
+      </svg>
+      <h1>Appointment confirmed</h1>
+      <p class="confirm-sub">Your session has been booked. Details are below.</p>
+
+      <p class="confirm-ref" id="refNumber">PSB-2026-00000</p>
+
+      <dl class="confirm-details" id="confirmDetails"></dl>
+
+      <p class="confirm-note" id="sentToNote">Your confirmation has been sent to your email.</p>
+
+      <a href="index.html" class="btn btn-primary">Back to Home</a>
+    </div>
+
+    <!-- FAILURE STATE -->
+    <div class="card confirm-card confirm-fail hidden" id="failState">
+      <svg class="confirm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/>
+      </svg>
+      <h1>We couldn't confirm your booking</h1>
+      <p class="confirm-sub" id="failMessage">Something went wrong while processing your appointment. No confirmation email was sent.</p>
+      <a href="booking.html" class="btn btn-primary">Try Again</a>
+    </div>
+
+    <!-- NO DATA / DIRECT VISIT STATE -->
+    <div class="card confirm-card hidden" id="emptyState">
+      <h1>No booking found</h1>
+      <p class="confirm-sub">It looks like you navigated here directly. Start a new booking below.</p>
+      <a href="booking.html" class="btn btn-primary">Book a Session</a>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p style="margin:0;">© 2026 LUMA Studio</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var raw = sessionStorage.getItem('psb_result');
+  var successEl = document.getElementById('successState');
+  var failEl = document.getElementById('failState');
+  var emptyEl = document.getElementById('emptyState');
+
+  if (!raw) {
+    emptyEl.classList.remove('hidden');
+    return;
+  }
+
+  var result;
+  try {
+    result = JSON.parse(raw);
+  } catch (e) {
+    emptyEl.classList.remove('hidden');
+    return;
+  }
+
+  if (!result.success) {
+    failEl.classList.remove('hidden');
+    if (result.message) {
+      document.getElementById('failMessage').textContent = result.message;
+    }
+    return;
+  }
+
+  var b = result.booking || {};
+  document.getElementById('refNumber').textContent = result.bookingReference || '—';
+
+  var rows = [
+    ['Photography Package', b.package],
+    ['Date', b.dateDisplay || b.date],
+    ['Time', b.time],
+    ['Location', b.location]
+  ];
+
+  var dl = document.getElementById('confirmDetails');
+  rows.forEach(function (r) {
+    if (!r[1]) return;
+    var row = document.createElement('div');
+    row.className = 'summary-row';
+    var dt = document.createElement('dt');
+    dt.textContent = r[0];
+    var dd = document.createElement('dd');
+    dd.textContent = r[1];
+    row.appendChild(dt);
+    row.appendChild(dd);
+    dl.appendChild(row);
+  });
+
+  if (b.email) {
+    document.getElementById('sentToNote').textContent = 'Your confirmation has been sent to: ' + b.email;
+  }
+
+  successEl.classList.remove('hidden');
+
+  // Clear so a page refresh doesn't replay a stale confirmation as if it were new
+  sessionStorage.removeItem('psb_result');
+})();
+</script>
+</body>
+</html>

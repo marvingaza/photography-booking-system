@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Env / secrets (none required by this project, but reserved)
+.env
+.env.local
+
+# Logs
+*.log
+
+# Archives produced for delivery
+*.zip
