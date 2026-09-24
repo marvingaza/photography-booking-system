@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = 'PASTE_YOUR_DEPLOYED_APPS_SCRIPT_WEB_APP_URL_HERE';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwPtWRpybTwzruYa_cSvaKYSbt0ICWCksliL97OALIydYScKs5xH1m-TqwUGaxGCjU/exec';
 
 (function () {
 
